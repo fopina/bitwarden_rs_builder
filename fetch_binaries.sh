@@ -1,7 +1,5 @@
 #!/bin/sh
 
-PATCH=1
-
 if [ -z "$1" ]; then
     echo "Usage: $0 [VERSION]"
     echo "Valid versions are the ones available in https://hub.docker.com/r/bitwardenrs/server/tags"
@@ -11,7 +9,9 @@ fi
 
 set -e
 
-VERSION=$1
+VERSION=$(echo $1 | cut -d '-' -f1)
+PATCH=$(echo $1 | cut -d '-' -f2)
+TAG=$1
 
 cd $(dirname $0)
 mkdir -p bins
@@ -32,9 +32,9 @@ docker rm ${CONTID}
 
 docker buildx build \
             --platform linux/amd64,linux/arm64,linux/arm/v6 \
-            --build-arg VERSION=${VERSION} \
+            --build-arg VERSION=${TAG} \
             -f Dockerfile \
             --push \
-            -t fopina/bitwarden_rs:${VERSION}-${PATCH} \
+            -t fopina/bitwarden_rs:${TAG} \
             -t fopina/bitwarden_rs:latest \
             .
